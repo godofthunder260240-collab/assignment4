@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "atharva260/assignment4"
-        TAG = "v1"
+        TAG = "v2"
     }
 
     stages {
