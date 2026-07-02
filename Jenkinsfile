@@ -11,31 +11,41 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/godofthunder260240-collab/assignment4.git'
+                    url: 'https://github.com/godofthunder260240-collab/assignment4.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $DOCKER_IMAGE:$TAG ."
+                sh "docker build -t ${DOCKER_IMAGE}:${TAG} ."
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'DockerHub',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
+                }
             }
         }
 
         stage('Push Image') {
             steps {
-                sh "docker push $DOCKER_IMAGE:$TAG"
+                sh "docker push ${DOCKER_IMAGE}:${TAG}"
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Update Kubernetes Deployment') {
             steps {
-                sh "kubectl set image deployment/ass4 ass4=$DOCKER_IMAGE:$TAG"
+                sh "kubectl set image deployment/ass4 ass4=${DOCKER_IMAGE}:${TAG}"
             }
         }
     }
