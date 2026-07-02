@@ -46,7 +46,7 @@ pipeline {
         stage('Update Kubernetes Deployment') {
             steps {
                 withEnv(["KUBECONFIG=/var/lib/jenkins/.kube/config"]) {
-                sh 'kubectl set image deployment/ass4 ass4=atharva260/assignment4:v1'
+                sh 'kubectl set image deployment/ass4 assignment4=atharva260/assignment4:v1'
                 }
             }
         }
